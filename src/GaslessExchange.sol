@@ -6,6 +6,7 @@ import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC2
 
 import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 import {ERC2771Context} from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
+import {MinimalForwarder} from "@openzeppelin/contracts/metatx/MinimalForwarder.sol";
 
 contract MyMinimalForwarder is MinimalForwarder {}
 
