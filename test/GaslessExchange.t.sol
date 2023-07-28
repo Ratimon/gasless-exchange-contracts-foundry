@@ -3,6 +3,7 @@ pragma solidity ^0.8.0;
 
 import {Test, stdError} from "@forge-std/Test.sol";
 
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
 
 import {MockERC20Permit} from "@test/mocks/MockERC20Permit.sol";
@@ -18,8 +19,8 @@ contract GaslessExchangeTest is Test {
 
     address trader1;
     address trader2;
-    address trader3;
-    address trader4;
+    // address trader3;
+    // address trader4;
 
     IERC20Permit tokenA;
     IERC20Permit tokenB;
@@ -58,15 +59,18 @@ contract GaslessExchangeTest is Test {
     }
 
     modifier setupTokens() {
-        deal({token: address(tokenA), to: trader1, give: 250e18});
-        deal({token: address(tokenA), to: trader2, give: 520e18});
+        deal({token: address(tokenA), to: trader1, give: 100e18});
+        deal({token: address(tokenA), to: trader2, give: 0e18});
         // deal({token: address(tokenA), to: trader3, give: 1080e18});
         // deal({token: address(tokenA), to: trader4, give: 0e18});
 
-        deal({token: address(tokenB), to: trader1, give: 700e18});
-        deal({token: address(tokenB), to: trader2, give: 300e18});
+        deal({token: address(tokenB), to: trader1, give: 0e18});
+        deal({token: address(tokenB), to: trader2, give: 50e18});
         // deal({token: address(tokenB), to: trader3, give: 200e18});
         // deal({token: address(tokenB), to: trader4, give: 0e18});
+
+        assertEq( IERC20(address(tokenA)).balanceOf(trader1), 100e18);
+        assertEq( IERC20(address(tokenB)).balanceOf(trader2), 50e18);
         _;
     }
 
@@ -129,5 +133,8 @@ contract GaslessExchangeTest is Test {
 
         bool success = exchange.mactchOrders(orders);
         require(success);
+
+        assertEq( IERC20(address(tokenA)).balanceOf(trader2), 100e18);
+        assertEq( IERC20(address(tokenB)).balanceOf(trader1), 50e18);
     }
 }
