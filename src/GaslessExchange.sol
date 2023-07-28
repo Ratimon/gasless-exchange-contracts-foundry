@@ -1,9 +1,6 @@
 //SPDX-License-Identifier: MIT
 pragma solidity =0.8.19;
 
-import {console2} from "@forge-std/console2.sol";
-
-
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
 
@@ -48,10 +45,9 @@ contract GaslessExchange is ERC2771Context {
         for (uint256 i = 0; i < length; i++) {
             Order calldata order = orders[i];
 
-            console2.log("order.from: %s", order.from);
-            console2.log("order.to: %s", order.to);
-
-            require(order.from == address(tokenA) || order.from == address(tokenB), "from token is either tokenA or tokenB");
+            require(
+                order.from == address(tokenA) || order.from == address(tokenB), "from token is either tokenA or tokenB"
+            );
             require(order.to == address(tokenB) || order.to == address(tokenA), "to token is either tokenA or tokenB");
 
             require(order.spender == address(this), "must permit the token first");

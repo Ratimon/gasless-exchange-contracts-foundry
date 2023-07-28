@@ -23,7 +23,9 @@ contract PermitSignature {
     /// @param _permit The approval to execute on-chain
     /// @return The encoded permit
     function getStructHash(Permit memory _permit) internal pure returns (bytes32) {
-        return keccak256(abi.encode(PERMIT_TYPEHASH, _permit.owner, _permit.spender, _permit.value, _permit.nonce, _permit.deadline));
+        return keccak256(
+            abi.encode(PERMIT_TYPEHASH, _permit.owner, _permit.spender, _permit.value, _permit.nonce, _permit.deadline)
+        );
     }
 
     /// @notice Computes the hash of a fully encoded EIP-712 message for the domain

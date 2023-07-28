@@ -10,9 +10,7 @@ import {PermitSignature} from "@test/utils/PermitSignature.sol";
 
 import {GaslessExchange, MyMinimalForwarder} from "@main/GaslessExchange.sol";
 
-
 contract GaslessExchangeTest is Test {
-
     string mnemonic = "test test test test test test test test test test test junk";
     uint256 deployerPrivateKey = vm.deriveKey(mnemonic, "m/44'/60'/0'/0/", 1); //  address = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8
 
@@ -41,7 +39,7 @@ contract GaslessExchangeTest is Test {
         trader2 = vm.addr(12);
         // trader3 = vm.addr(13);
         // trader4 = vm.addr(14);
-       
+
         tokenA = IERC20Permit(address(new MockERC20Permit("TestTokenA", "A")));
         tokenB = IERC20Permit(address(new MockERC20Permit("TestTokenB", "B")));
         vm.label(address(tokenA), "TestTokenA");
@@ -87,20 +85,20 @@ contract GaslessExchangeTest is Test {
 
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(11, digestTokenA);
 
-        GaslessExchange.Order[] memory orders = new GaslessExchange.Order[](2) ;
+        GaslessExchange.Order[] memory orders = new GaslessExchange.Order[](2);
         orders[0] = GaslessExchange.Order({
-                from: address(tokenA),
-                fromAmount: 100e18,
-                to: address(tokenB),
-                toAmount: 50e18,
-                owner: trader1,
-                spender: address(exchange),
-                value: 100e18,
-                deadline: 1 days,
-                v: v,
-                r: r,
-                s: s,
-                nonce: 0
+            from: address(tokenA),
+            fromAmount: 100e18,
+            to: address(tokenB),
+            toAmount: 50e18,
+            owner: trader1,
+            spender: address(exchange),
+            value: 100e18,
+            deadline: 1 days,
+            v: v,
+            r: r,
+            s: s,
+            nonce: 0
         });
 
         permitToken = PermitSignature.Permit({
@@ -112,7 +110,7 @@ contract GaslessExchangeTest is Test {
         });
 
         bytes32 digestTokenB = sigUtilsTokenB.getTypedDataHash(permitToken);
-        ( v, r, s) = vm.sign(12, digestTokenB);
+        (v, r, s) = vm.sign(12, digestTokenB);
 
         orders[1] = GaslessExchange.Order({
             from: address(tokenB),
@@ -130,7 +128,5 @@ contract GaslessExchangeTest is Test {
         });
 
         exchange.mactchOrders(orders);
-
     }
-    
 }
