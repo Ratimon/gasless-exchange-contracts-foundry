@@ -127,6 +127,7 @@ contract GaslessExchangeTest is Test {
             nonce: 0
         });
 
-        exchange.mactchOrders(orders);
+        bool success = exchange.mactchOrders(orders);
+        require(success);
     }
 }

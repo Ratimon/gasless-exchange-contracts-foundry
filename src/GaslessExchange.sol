@@ -4,13 +4,14 @@ pragma solidity =0.8.19;
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Permit.sol";
 
+import {MinimalForwarder} from "@openzeppelin/contracts/metatx/MinimalForwarder.sol";
 import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 import {ERC2771Context} from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
-import {MinimalForwarder} from "@openzeppelin/contracts/metatx/MinimalForwarder.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract MyMinimalForwarder is MinimalForwarder {}
 
-contract GaslessExchange is ERC2771Context {
+contract GaslessExchange is ERC2771Context, ReentrancyGuard {
     ERC20Permit public immutable tokenA;
     ERC20Permit public immutable tokenB;
 
@@ -36,7 +37,7 @@ contract GaslessExchange is ERC2771Context {
         tokenB = ERC20Permit(address(_tokenB));
     }
 
-    function mactchOrders(Order[] calldata orders) external returns (bool success) {
+    function mactchOrders(Order[] calldata orders) nonReentrant external returns (bool success) {
         uint256 currentTokenAAmount;
         uint256 currentTokenBAmount;
 
