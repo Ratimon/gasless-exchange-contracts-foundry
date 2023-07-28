@@ -7,6 +7,8 @@ import {IERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/IERC2
 import {ERC20Permit} from "@openzeppelin/contracts/token/ERC20/extensions/draft-ERC20Permit.sol";
 import {ERC2771Context} from "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 
+contract MyMinimalForwarder is MinimalForwarder {}
+
 contract GaslessExchange is ERC2771Context {
     ERC20Permit public immutable tokenA;
     ERC20Permit public immutable tokenB;
