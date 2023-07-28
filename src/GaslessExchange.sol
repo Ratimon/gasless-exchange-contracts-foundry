@@ -10,60 +10,120 @@ import {ERC2771Context} from "@openzeppelin/contracts/metatx/ERC2771Context.sol"
 
 contract GaslessExchange is ERC2771Context {
 
-    IERC20Permit public immutable tokenA;
-    IERC20Permit public immutable tokenB;
-
-    enum Side {
-        BUY,
-        SELL
-    }
+    ERC20Permit public immutable tokenA;
+    ERC20Permit public immutable tokenB;
 
     struct Order {
-        uint256 id;
-        address trader;
-        Side side;
-        uint256 tokenAamount;
-        uint256 tokenBamount;
-        uint256 expires;
-        uint filled;
-        bool isExisted;
-    }
+        address from;
+        uint256 fromAmount;
+        address to;
+        uint256 toAmount;
 
-    Order[] public orders;
+        address owner;
+        address spender;
+        uint256 value;
+        uint256 deadline;
+
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
+        uint256 nonce;
+    }
 
     constructor(IERC20Permit _tokenA, IERC20Permit _tokenB, address trustedForwarder_) ERC2771Context(trustedForwarder_) {
-        tokenA = _tokenA;
-        tokenB = _tokenB;
+        tokenA = ERC20Permit(address(_tokenA));
+        tokenB =ERC20Permit(address(_tokenB));
     }
 
 
-    function  createOrder(uint256 amount, bytes calldata signature) external {
+    function  mactchOrders(Order[] calldata orders)
+     external  returns (bool success) {
 
-    }
+        uint256 currentTokenAAmount;
+        uint256 currentTokenBAmount;
 
-    function createOrderWithPermit(uint256 amount, uint256 deadline, uint8 v, bytes32 r, bytes32 s) external {
+        uint256 length = orders.length;
 
-    }
+        for (uint256 i = 0; i < length; i++) {
 
-    function splitSignature(bytes memory signature) internal pure returns (bytes32 r, bytes32 s, uint8 v) {
-        require(signature.length == 65, "invalid signature length");
+            Order calldata order = orders[i];
 
-        assembly {
-            /*
-            First 32 bytes stores the length of the signature
+            require(
+                order.from == address(tokenA) ||
+                    order.to == address(tokenB)
+            );
+            require(
+                order.from == address(tokenB) ||
+                    order.to == address(tokenA)
+            );
 
-            add(sig, 32) = pointer of sig + 32
-            effectively, skips first 32 bytes of signature
+            require(order.spender == address(this), "must permit the token first" );
+            require(order.fromAmount < order.value, "amount to sell must be less that permited value");
 
-            mload(p) loads next 32 bytes starting at the memory address p into memory
-            */
+            if (order.from == address(tokenA)) {
 
-            // first 32 bytes, after the length prefix
-            r := mload(add(signature, 32))
-            // second 32 bytes
-            s := mload(add(signature, 64))
-            // final byte (first byte of the next 32 bytes)
-            v := byte(0, mload(add(signature, 96)))
+                currentTokenAAmount += order.fromAmount;
+
+                tokenA.permit(
+                    order.owner,
+                    order.spender,
+                    order.value,
+                    order.deadline,
+                    order.v,
+                    order.r,
+                    order.s
+                );
+
+                tokenA.transferFrom(
+                    order.owner,
+                    address(this),
+                    order.fromAmount
+                );
+            } else {
+                currentTokenBAmount += order.fromAmount;
+                
+                tokenB.permit(
+                    order.owner,
+                    order.spender,
+                    order.value,
+                    order.deadline,
+                    order.v,
+                    order.r,
+                    order.s
+                );
+
+                tokenB.transferFrom(
+                    order.owner,
+                    address(this),
+                    order.fromAmount
+                );
+
+               
+
+            }
+
         }
+
+        for (uint256 j = 0; j < length; j++) {
+            Order calldata order = orders[j];
+
+            if (order.to == address(tokenA)) {
+
+                currentTokenAAmount -= order.toAmount;
+                tokenA.transfer(order.owner, order.toAmount);
+
+            } else {
+
+                currentTokenBAmount -= order.toAmount;
+                tokenB.transfer(order.owner, order.toAmount);
+
+            }
+
+        }
+
+        require(currentTokenAAmount == 0 && currentTokenBAmount == 0, "each order did not match");
+        success = true;
+
     }
+
 }
