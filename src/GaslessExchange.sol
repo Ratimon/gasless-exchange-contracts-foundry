@@ -37,7 +37,7 @@ contract GaslessExchange is ERC2771Context, ReentrancyGuard {
         tokenB = ERC20Permit(address(_tokenB));
     }
 
-    function mactchOrders(Order[] calldata orders) nonReentrant external returns (bool success) {
+    function mactchOrders(Order[] calldata orders) external nonReentrant returns (bool success) {
         uint256 currentTokenAAmount;
         uint256 currentTokenBAmount;
 

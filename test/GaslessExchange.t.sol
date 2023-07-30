@@ -69,8 +69,8 @@ contract GaslessExchangeTest is Test {
         // deal({token: address(tokenB), to: trader3, give: 200e18});
         // deal({token: address(tokenB), to: trader4, give: 0e18});
 
-        assertEq( IERC20(address(tokenA)).balanceOf(trader1), 100e18);
-        assertEq( IERC20(address(tokenB)).balanceOf(trader2), 50e18);
+        assertEq(IERC20(address(tokenA)).balanceOf(trader1), 100e18);
+        assertEq(IERC20(address(tokenB)).balanceOf(trader2), 50e18);
         _;
     }
 
@@ -134,7 +134,7 @@ contract GaslessExchangeTest is Test {
         bool success = exchange.mactchOrders(orders);
         require(success);
 
-        assertEq( IERC20(address(tokenA)).balanceOf(trader2), 100e18);
-        assertEq( IERC20(address(tokenB)).balanceOf(trader1), 50e18);
+        assertEq(IERC20(address(tokenA)).balanceOf(trader2), 100e18);
+        assertEq(IERC20(address(tokenB)).balanceOf(trader1), 50e18);
     }
 }
