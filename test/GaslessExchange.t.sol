@@ -19,8 +19,6 @@ contract GaslessExchangeTest is Test {
 
     address trader1;
     address trader2;
-    // address trader3;
-    // address trader4;
 
     IERC20Permit tokenA;
     IERC20Permit tokenB;
@@ -38,8 +36,7 @@ contract GaslessExchangeTest is Test {
 
         trader1 = vm.addr(11);
         trader2 = vm.addr(12);
-        // trader3 = vm.addr(13);
-        // trader4 = vm.addr(14);
+
 
         tokenA = IERC20Permit(address(new MockERC20Permit("TestTokenA", "A")));
         tokenB = IERC20Permit(address(new MockERC20Permit("TestTokenB", "B")));
@@ -61,13 +58,9 @@ contract GaslessExchangeTest is Test {
     modifier setupTokens() {
         deal({token: address(tokenA), to: trader1, give: 100e18});
         deal({token: address(tokenA), to: trader2, give: 0e18});
-        // deal({token: address(tokenA), to: trader3, give: 1080e18});
-        // deal({token: address(tokenA), to: trader4, give: 0e18});
 
         deal({token: address(tokenB), to: trader1, give: 0e18});
         deal({token: address(tokenB), to: trader2, give: 50e18});
-        // deal({token: address(tokenB), to: trader3, give: 200e18});
-        // deal({token: address(tokenB), to: trader4, give: 0e18});
 
         assertEq(IERC20(address(tokenA)).balanceOf(trader1), 100e18);
         assertEq(IERC20(address(tokenB)).balanceOf(trader2), 50e18);
